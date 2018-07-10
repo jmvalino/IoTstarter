@@ -24,22 +24,27 @@ mongoose.connect(`mongodb://batsu:iotpa55@ds229701.mlab.com:29701/iotstarter`, o
   .then(() => console.log('Connected to DB'))
   .catch(err => console.log(err))
 
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Welcome to the API'
+  })
+})
 
 //API Routes middlewares
 app.use('/device', device);
 //app.use('/reports', reports);
 
 //Global error handlers
-app.use((req,res,next)=>{
+app.use((req, res, next) => {
   const error = new Error("API not found");
   error.status = 404;
   next(error);
 })
 
-app.use((error,req,res,next)=>{
+app.use((error, req, res, next) => {
   res.status(error.status || 500);
   res.json({
-    error : {
+    error: {
       message: error.message
     }
   })
@@ -48,6 +53,6 @@ app.use((error,req,res,next)=>{
 
 
 const port = process.env.PORT || 3001;
-app.listen(port,()=>{
-    console.log(`SERVER RUNNNING`)
+app.listen(port, () => {
+  console.log(`SERVER RUNNNING`)
 })

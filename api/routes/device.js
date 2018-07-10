@@ -13,7 +13,7 @@ router.post('/', (req, res, next) => {
     });
 
     device.save()
-        .then(res.json({ message: 'Device Successfully Added To The System', info: device }))
+        .then(res.status(201).json({ message: 'Device Successfully Added To The System', info: device }))
         .catch(err => console.log(err))
 }
 )
