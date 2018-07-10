@@ -1,0 +1,7 @@
+{
+    "env": {
+        
+        "DB_USER": "batsu",
+        "DB_PASS": "iotpa55"
+    }
+}
