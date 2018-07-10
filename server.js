@@ -47,5 +47,7 @@ app.use((error,req,res,next)=>{
 
 
 
-const port = process.env.port || 3001;
-app.listen(port, () => console.log(`Server running on port ${port}`))
+const port = process.env.PORT || 3001;
+app.listen(port,()=>{
+    console.log(`SERVER RUNNNING`)
+})
