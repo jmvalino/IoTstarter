@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const mqttSub = require('./api/mqtt/subscribe')
 const mongoose = require('mongoose');
 const morgan = require('morgan')
 const bodyParser = require('body-parser');
@@ -23,6 +24,23 @@ mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://batsu:iotpa55@ds229701.mlab.com:29701/iotstarter`, options)
   .then(() => console.log('Connected to DB'))
   .catch(err => console.log(err))
+
+
+// mqttSub.on('connect', function () {
+//   mqttSub.subscribe('esp/test')
+//   //client.publish('esp/test', 'Hello mqtt')
+// })
+
+// mqttSub.on('message', function (topic, message) {
+//   // message is Buffer
+//   console.log(message.toString())
+//   mqttSub.end()
+// })
+
+// app.use((req, res, next) => {
+//   mqttSub.subscribe
+//   next();
+// });
 
 app.get('/', (req, res) => {
   res.status(200).json({
@@ -50,7 +68,7 @@ app.use((error, req, res, next) => {
   })
 })
 
-
+//app.use(mqttSub.subscribe);
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
