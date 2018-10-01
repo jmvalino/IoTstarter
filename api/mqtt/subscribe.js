@@ -6,7 +6,7 @@ const client = mqtt.connect({
     password: '1234abcD'
 });
 client.on('connect', function () {
-  client.subscribe('esp/test')
+  client.subscribe('iot/interrupt')
   //client.publish('esp/test', 'Hello mqtt')
 })
  

@@ -13,7 +13,12 @@ app.use(bodyParser.json());
 app.use(morgan('dev'));
 
 //API routes imports
+
 const device = require('./api/routes/device');
+const users = require('./api/routes/users');
+const sensor_nodes = require('./api/routes/sensor_nodes');
+const outages = require('./api/routes/outages');
+const auth = require('./api/routes/auth')
 //const reports = require('./api/routes/reports');
 
 //mongoose connection URI
@@ -37,10 +42,10 @@ mongoose.connect(`mongodb://batsu:iotpa55@ds229701.mlab.com:29701/iotstarter`, o
 //   mqttSub.end()
 // })
 
-// app.use((req, res, next) => {
-//   mqttSub.subscribe
-//   next();
-// });
+app.use((req, res, next) => {
+  mqttSub.subscribe
+  next();
+});
 
 app.get('/', (req, res) => {
   res.status(200).json({
@@ -49,7 +54,11 @@ app.get('/', (req, res) => {
 })
 
 //API Routes middlewares
-app.use('/device', device);
+app.use('/api/device', device);
+app.use('/api/users', users);
+app.use('/api/sensor_nodes', sensor_nodes);
+app.use('/api//outages', outages);
+app.use('/api/auth',auth)
 //app.use('/reports', reports);
 
 //Global error handlers
@@ -70,7 +79,7 @@ app.use((error, req, res, next) => {
 
 //app.use(mqttSub.subscribe);
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`SERVER RUNNNING`)
 })
