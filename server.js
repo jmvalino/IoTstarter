@@ -47,11 +47,11 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/', (req, res) => {
-  res.status(200).json({
-    message: 'Welcome to the API'
-  })
-})
+// app.get('/', (req, res) => {
+//   res.status(200).json({
+//     message: 'Welcome to the API'
+//   })
+// })
 
 //API Routes middlewares
 app.use('/api/device', device);
@@ -79,7 +79,18 @@ app.use((error, req, res, next) => {
 
 //app.use(mqttSub.subscribe);
 
-const port = process.env.PORT || 3000;
+app.use(express.static('client/build'))
+
+if (process.env.NODE_ENV === 'production') {
+    const path = require('path');
+    app.get('/*', (req, res) => {
+        res.sendfile(path.resolve(__dirname, '../client', 'build', 'index.html'))
+    })
+}
+
+
+
+const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`SERVER RUNNNING`)
 })
