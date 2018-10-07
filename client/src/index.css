@@ -1,5 +1,16 @@
 body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+    margin: auto;
+}
+
+.store {
+    background: #000;
+    margin: auto;
+    text-align: center;
+    color: #fff;
+    padding: 7px;
+}
+
+.content {
+    margin: auto;
+    text-align: center;
 }

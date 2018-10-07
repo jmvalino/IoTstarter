@@ -64,7 +64,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use('/api/device', device);
 app.use('/api/users', users);
 app.use('/api/sensor_nodes', sensor_nodes);
-app.use('/api//outages', outages);
+app.use('/api/outages', outages);
 app.use('/api/auth',auth)
 //app.use('/reports', reports);
 
