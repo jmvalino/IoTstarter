@@ -63,12 +63,14 @@ if (process.env.NODE_ENV === 'production') {
 }
 //API Routes middlewares
 app.use('/api/auth',auth)
+
+//API JWT checker
 app.use(function(req, res, next) {
   var token = req.headers['x-access-token'];
   if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
   
   jwt.verify(token, CONFIG.SECRET, function(err, decoded) {
-    if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+    if (err) return res.status(500).send({ auth: false, message: 'No Access Permission' });
     
     next()
   });
