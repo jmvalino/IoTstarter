@@ -1,27 +1,32 @@
-import React,{Component} from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
 import './index.css'
 import PlayStoreImage from './Images/playstore.png'
 import AppStoreImage from './Images/appstore.png'
 import PowerImage from './Images/electricity.png'
+import 'antd/dist/antd.css'
+import { Card, Icon, Avatar } from 'antd';
+
+const { Meta } = Card;
 
 class App extends Component {
     render() {
-        return(
+        return (
             <React.Fragment>
-                <div className='content'>
-                    <img src={PowerImage} alt='appstore' width='200px'/>
-                    <h1>May Power Ga?</h1>
-                </div>
-                
-                <div className='store'>
-                    <h3>AVAILABLE ON</h3>
-                    <img src={PlayStoreImage} alt='playstore' onClick={() => alert('heloo')} />
-                    <img src={AppStoreImage} alt='appstore'/>
-                </div> 
+                <Card
+                    style={{ width: 300 }}
+                    cover={<img alt="example" src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png" />}
+                    actions={[<Icon type="setting" />, <Icon type="edit" />, <Icon type="ellipsis" />]}
+                >
+                    <Meta
+                        avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+                        title="Card title"
+                        description="This is the description"
+                    />
+                </Card>
             </React.Fragment>
-         
+
         )
     }
 }

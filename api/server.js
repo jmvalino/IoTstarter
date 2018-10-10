@@ -1,10 +1,11 @@
 const express = require('express');
 const app = express();
-const mqttSub = require('./api/mqtt/subscribe')
+const mqttSub = require('./mqtt/subscribe')
 const mongoose = require('mongoose');
 const morgan = require('morgan')
 const bodyParser = require('body-parser');
-
+const jwt = require('jsonwebtoken')
+const CONFIG =  require('../config')
 //bodyParser middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -14,11 +15,11 @@ app.use(morgan('dev'));
 
 //API routes imports
 
-const device = require('./api/routes/device');
-const users = require('./api/routes/users');
-const sensor_nodes = require('./api/routes/sensor_nodes');
-const outages = require('./api/routes/outages');
-const auth = require('./api/routes/auth')
+const device = require('./routes/device');
+const users = require('./routes/users');
+const sensor_nodes = require('./routes/sensor_nodes');
+const outages = require('./routes/outages');
+const auth = require('./routes/auth')
 //const reports = require('./api/routes/reports');
 
 //mongoose connection URI
@@ -26,7 +27,7 @@ const options = {
   useNewUrlParser: true,
 };
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://batsu:iotpa55@ds229701.mlab.com:29701/iotstarter`, options)
+mongoose.connect(CONFIG.DB, options)
   .then(() => console.log('Connected to DB'))
   .catch(err => console.log(err))
 
@@ -61,11 +62,23 @@ if (process.env.NODE_ENV === 'production') {
     })
 }
 //API Routes middlewares
+app.use('/api/auth',auth)
+app.use(function(req, res, next) {
+  var token = req.headers['x-access-token'];
+  if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
+  
+  jwt.verify(token, CONFIG.SECRET, function(err, decoded) {
+    if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+    
+    next()
+  });
+});
+
 app.use('/api/device', device);
 app.use('/api/users', users);
 app.use('/api/sensor_nodes', sensor_nodes);
 app.use('/api/outages', outages);
-app.use('/api/auth',auth)
+
 //app.use('/reports', reports);
 
 //Global error handlers
