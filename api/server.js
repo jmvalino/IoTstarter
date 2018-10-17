@@ -65,16 +65,16 @@ if (process.env.NODE_ENV === 'production') {
 app.use('/api/auth',auth)
 
 //API JWT checker
-app.use(function(req, res, next) {
-  var token = req.headers['x-access-token'];
-  if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
+// app.use(function(req, res, next) {
+//   var token = req.headers['x-access-token'];
+//   if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
   
-  jwt.verify(token, CONFIG.SECRET, function(err, decoded) {
-    if (err) return res.status(500).send({ auth: false, message: 'No Access Permission' });
+//   jwt.verify(token, CONFIG.SECRET, function(err, decoded) {
+//     if (err) return res.status(500).send({ auth: false, message: 'No Access Permission' });
     
-    next()
-  });
-});
+//     next()
+//   });
+// });
 
 app.use('/api/device', device);
 app.use('/api/users', users);
