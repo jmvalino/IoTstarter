@@ -21,6 +21,8 @@ let MQTT_MESSAGE = await JSON.parse(packet.payload)
 let node_id_mqtt =  MQTT_MESSAGE.node_id
 let power_state_mqtt =  MQTT_MESSAGE.status
 let timestamp_mqtt =  MQTT_MESSAGE.timestamp
+let long_mqtt =  MQTT_MESSAGE.long
+let lat_mqtt =  MQTT_MESSAGE.lat
 
 if(power_state_mqtt == 'off'){
 
@@ -29,7 +31,9 @@ if(power_state_mqtt == 'off'){
         _id: new mongoose.Types.ObjectId(),
         node_id : node_id_mqtt,
         power_down_timestamp:timestamp_mqtt,
-        power_up_timestamp: ''
+        power_up_timestamp: '',
+        long : long_mqtt,
+        lat: lat_mqtt
         });
         
 outage.save()
