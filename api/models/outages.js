@@ -5,6 +5,7 @@ var Schema = mongoose.Schema,
 const outagesSchema = mongoose.Schema({
     _id: ObjectId, 
     node_id: String,
+    barangay_id: String,
     power_up_timestamp: String,
     power_down_timestamp: String,
     long:String,
