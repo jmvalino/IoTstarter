@@ -30,7 +30,7 @@ router.post('/add', (req, res, next) => {
 //create new Sensor_nodes document
 router.get('/', (req, res, next) => {
     //a - user b - node c - outage d - gateway
-    db.query(`SELECT  DISTINCT a.username, b.serial, b.node_lon, b.node_lat, d.barangay, d.municipality, d.province FROM user AS a, node AS b, outage AS c, gateway as d WHERE c.status = "off"`,function (err, results, fields) {
+    db.query(`SELECT  c.outage_id, a.username, b.serial, b.node_lon, b.node_lat, d.barangay, d.municipality, d.province FROM heroku_54ceab818c7a0f1.user AS a, heroku_54ceab818c7a0f1.node AS b, heroku_54ceab818c7a0f1.outage AS c, heroku_54ceab818c7a0f1.gateway as d WHERE c.status = "off" GROUP BY c.outage_id`,function (err, results, fields) {
         if (err) throw err;
         res.status(200).json({outages:results})
       });
