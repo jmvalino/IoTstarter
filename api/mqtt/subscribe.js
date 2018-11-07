@@ -1,6 +1,7 @@
 const mqtt = require('mqtt');
 const mongoose = require('mongoose');
 const Outages = require('../models/outages')
+const db = require('../../dbconfig');
 const client = mqtt.connect({
 host: 'm14.cloudmqtt.com',
 port: 19527,
@@ -18,40 +19,26 @@ client.subscribe('iot/interrupt')
 client.on('message',async (topic, message, packet) => {
  
 let MQTT_MESSAGE = await JSON.parse(packet.payload)
+
 let node_id_mqtt =  MQTT_MESSAGE.node_id
-let barangay_id_mqtt = MQTT_MESSAGE.barangay_id
 let power_state_mqtt =  MQTT_MESSAGE.status
 let timestamp_mqtt =  MQTT_MESSAGE.timestamp
-let long_mqtt =  MQTT_MESSAGE.long
-let lat_mqtt =  MQTT_MESSAGE.lat
 
+console.log(MQTT_MESSAGE)
 if(power_state_mqtt == 'off'){
 
-
-    const outage = new Outages({
-        _id: new mongoose.Types.ObjectId(),
-        node_id : node_id_mqtt,
-        barangay_id: barangay_id_mqtt,
-        power_down_timestamp:timestamp_mqtt,
-        power_up_timestamp: '',
-        long : long_mqtt,
-        lat: lat_mqtt
-        });
-        
-outage.save()
-.then(console.log('saved'))
-.catch(err => console.logs(err))
-
-
-
+    db.query(`INSERT INTO outage (node_id,status,down_timestamp) VALUES ("${node_id_mqtt}","${power_state_mqtt}","${timestamp_mqtt}")`,function (err, results, fields) {
+        if (err) throw err;
+        console.log(results)
+      });
+      
 }
 else{
 
-Outages.updateOne({ node_id: node_id_mqtt, power_up_timestamp: '' },{power_up_timestamp: timestamp_mqtt}, (err, outages) => {
-if (err) { console.log(err) }
-console.log(outages)
-
-})
+    db.query(`UPDATE heroku_54ceab818c7a0f1.outage SET status = "on", up_timestamp = "${timestamp_mqtt}" WHERE node_id = "${node_id_mqtt}";`,function (err, results, fields) {
+        if (err) throw err;
+        console.log(results)
+      });
 
 }
 
