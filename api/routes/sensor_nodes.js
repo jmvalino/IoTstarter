@@ -2,19 +2,21 @@ const express = require('express');
 const router = express.Router();
 const Sensor_Nodes = require('../models/sensor_nodes')
 const mongoose = require('mongoose');
-
+const db = require('../../dbconfig');
 //create new Sensor_nodes document
 router.post('/', (req, res, next) => {
-    let sensor_node = new Sensor_Nodes({
-        edge: req.body.edge,
-        owner: req.body.owner,
-        dateactivated: Date.now()
+    let serial = req.body.serial
+    let lon = req.body.lon
+    let lat = req.body.lat
+    let user_id = req.body.user_id
+    if(serial==null || user_id==null){
+       return res.status(400).json({ message: 'Not Created', info: 'Supply all the necessaryy fields' })
+    }
 
-    });
-
-    sensor_node.save()
-        .then(res.status(201).json({ message: 'Device Successfully Added To The System', info: device }))
-        .catch(err => console.log(err))
+    db.query(`INSERT INTO node (serial,node_lon,node_lat,user_id) VALUES ("${serial}","${lon}","${lat}",${user_id})`,function (err, results, fields) {
+        if (err) throw err;
+        res.status(200).json(results)
+      });
 }
 )
 

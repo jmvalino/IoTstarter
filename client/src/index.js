@@ -14,13 +14,13 @@ class App extends Component {
     render() {
         return (
             <React.Fragment>
-                <div style={{display: 'flex', textAlign: 'center', flexDirection: 'column'}}>
-                    <div style={{flex: 1, display: 'flex', flexDirection: 'row'}}>
+                <div style={{display: 'flex', textAlign: 'center', flexFlow: 'column'}}>
+                    <div style={{flex: 1, display: 'flex', flexFlow: 'row'}}>
 
                         <div style={{flex: 1,  color: '#fff',background: '#000',}}>
                         <img src={PowerImage} width = '200'/>
                         <strong>May Power Ga?</strong>
-                        <p> An Ecosystem of hassle-power Power Outage Management</p>
+                        <p> An Ecosystem of hassle-free Power Outage Management</p>
                         </div>
                         <div style={{flex: 1, background: '#fff', color: 'gray'}}>
                         <h1><Icon type="compass" theme="twoTone" /> Outage Locator</h1>

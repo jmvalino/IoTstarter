@@ -5,7 +5,9 @@ const mongoose = require('mongoose');
 const morgan = require('morgan')
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken')
-const CONFIG =  require('../config')
+// const CONFIG =  require('../dbconfig')
+
+//const connection = require('../config')
 //bodyParser middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -19,38 +21,26 @@ const device = require('./routes/device');
 const users = require('./routes/users');
 const sensor_nodes = require('./routes/sensor_nodes');
 const outages = require('./routes/outages');
-const auth = require('./routes/auth')
+//const auth = require('./routes/auth')
 //const reports = require('./api/routes/reports');
 
-//mongoose connection URI
-const options = {
-  useNewUrlParser: true,
-  autoIndex: false, // Don't build indexes
-  reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
-  reconnectInterval: 500, // Reconnect every 500ms
-  poolSize: 10, // Maintain up to 10 socket connections
-  // If not connected, return errors immediately rather than waiting for reconnect
-  bufferMaxEntries: 0,
-  connectTimeoutMS: 10000, // Give up initial connection after 10 seconds
-  socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-  family: 4 // Use IPv4, skip trying IPv6
-};
-mongoose.Promise = global.Promise;
-mongoose.connect(CONFIG.DB, options)
-  .then(() => console.log('Connected to DB'))
-  .catch(err => console.log(err))
+// var mysql      = require('mysql');
+// var connection = mysql.createConnection({
+//   host: 'us-cdbr-iron-east-01.cleardb.net',
+//   user: 'b08d9862edc985',
+//   password: 'bf90228c',
+//   database: 'heroku_54ceab818c7a0f1'
+// });
 
+// connection.connect();
+ 
+// connection.query('SELECT * from user', function (error, results, fields) {
+//   if (error) throw error;
+//   console.log(results);
+// });
+ 
+// connection.end();
 
-// mqttSub.on('connect', function () {
-//   mqttSub.subscribe('esp/test')
-//   //client.publish('esp/test', 'Hello mqtt')
-// })
-
-// mqttSub.on('message', function (topic, message) {
-//   // message is Buffer
-//   console.log(message.toString())
-//   mqttSub.end()
-// })
 
 app.use((req, res, next) => {
   mqttSub.subscribe
@@ -71,7 +61,7 @@ if (process.env.NODE_ENV === 'production') {
     })
 }
 //API Routes middlewares
-app.use('/api/auth',auth)
+//app.use('/api/auth',auth)
 
 //API JWT checker
 // app.use(function(req, res, next) {
@@ -86,15 +76,15 @@ app.use('/api/auth',auth)
 // });
 
 app.use('/api/device', device);
-app.use('/api/users', users);
-app.use('/api/sensor_nodes', sensor_nodes);
-app.use('/api/outages', outages);
+app.use('/api/user', users);
+app.use('/api/node', sensor_nodes);
+app.use('/api/outage', outages);
 
 //app.use('/reports', reports);
 
 //Global error handlers
 app.use((req, res, next) => {
-  const error = new Error("API not found");
+  const error = new Error("Not Authorized");
   error.status = 404;
   next(error);
 })

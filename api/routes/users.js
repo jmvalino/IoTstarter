@@ -2,53 +2,30 @@ const express = require('express');
 const router = express.Router();
 const Users = require('../models/users')
 const mongoose = require('mongoose');
-
+const db = require('../../dbconfig');
 //create new device document
-router.post('/add', (req, res, next) => {
+router.post('/', (req, res, next) => {
+    let first_name = req.body.first_name
+    let last_name = req.body.last_name
     let email = req.body.email
     let mobile_number = req.body.mobile_number
     if(email==null || mobile_number==null){
        return res.status(400).json({ message: 'Not Created', info: 'Supply all the necessaryy fields' })
     }
-    let user = new Users({
-        email: req.body.email,
-        mobile_number: req.body.mobile_number,
-        date_registered: Date.now()
 
-    });
-
-    user.save()
-        .then(res.status(201).json({ message: 'Account Created', info: user }))
-        .catch(err => console.log(err))
+    db.query(`INSERT INTO user (first_name,last_name,email,mobile_number) VALUES ("${first_name}","${last_name}","${email}","${mobile_number}")`,function (err, results, fields) {
+        if (err) throw err;
+        res.status(200).json(results)
+      });
 }
 )
 
 //query one device --- /device?id=xxxxxxx
 router.get('/', (req, res, next) => {
-    let __id = req.query.id
-    let __limit = req.query.limit
-    if (__id) {
-        Device.find({ _id: __id }, (err, user) => {
-            if (err) { console.log(err) }
-
-            res.send({
-                user
-            })
-
-        })
-    }
-    else {
-
-        Users.find({}, (err, users) => {
-            if (err) { console.log(err) }
-
-            res.send({
-                users
-            })
-
-        })
-    }
-
+    db.query('SELECT * from user',function(err, result) {
+        if (err) throw err;
+        res.status(200).json(result)
+      });
 
 })
 
