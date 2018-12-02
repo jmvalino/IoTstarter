@@ -38,6 +38,15 @@ router.get('/', (req, res) => {
 
 )
 
+/////////////////////Consolidted///////////////
+router.get('/consolidated', (req, res) => {
+    //a - user b - node c - outage d - gateway ////
+    db.query(`SELECT COUNT(n.gateway_id) AS outage_count, n.gateway_id, g.barangay from heroku_54ceab818c7a0f1.node as n,heroku_54ceab818c7a0f1.gateway as g,heroku_54ceab818c7a0f1.outage as o where o.status = 'off' and g.gateway_id = n.gateway_id and (o.node_id = n.node_id) group by n.gateway_id`,function (err, results, fields) {
+        if (err) throw err;
+        res.status(200).json({consolidated_outages:results})
+      });
+})
+
 //DELETE by _id ------ /device/remove?id=xxxxxxx
 // router.delete('/remove', (req, res, next) => {
 //     let __id = req.query.id;
