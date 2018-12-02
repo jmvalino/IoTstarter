@@ -30,7 +30,8 @@ router.post('/add', (req, res, next) => {
 //create new Sensor_nodes document
 router.get('/', (req, res) => {
     //a - user b - node c - outage d - gateway ////
-    db.query(`SELECT  c.outage_id,c.down_timestamp, a.email, b.serial, d.longitude, d.latitude, d.barangay, d.municipality, d.province FROM heroku_54ceab818c7a0f1.user AS a, heroku_54ceab818c7a0f1.node AS b, heroku_54ceab818c7a0f1.outage AS c, heroku_54ceab818c7a0f1.gateway as d WHERE c.status = "off" GROUP BY c.outage_id`,function (err, results, fields) {
+    let gateway_id = req.query.gateway_id
+    db.query(`SELECT  c.outage_id,c.down_timestamp, a.email, c.node_id, d.longitude, d.latitude, d.barangay, d.municipality, d.province FROM heroku_54ceab818c7a0f1.user AS a, heroku_54ceab818c7a0f1.node AS b, heroku_54ceab818c7a0f1.outage AS c, heroku_54ceab818c7a0f1.gateway as d WHERE c.status = "off"  and ((b.node_id = c.node_id  and b.gateway_id = "${gateway_id}")) GROUP BY c.outage_id`,function (err, results, fields) {
         if (err) throw err;
         res.status(200).json({outages:results})
       });
