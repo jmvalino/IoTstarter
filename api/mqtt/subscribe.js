@@ -26,18 +26,30 @@ let timestamp_mqtt =  MQTT_MESSAGE.timestamp
 
 console.log(MQTT_MESSAGE)
 if(power_state_mqtt == 'off'){
-///try fix
-    db.query(`INSERT INTO heroku_54ceab818c7a0f1.outage(node_id, status,down_timestamp) SELECT node_id, 'off','201820122' FROM heroku_54ceab818c7a0f1.node WHERE serial = '${node_id_mqtt}'`,function (err, results, fields) {
+
+    db.query(`SELECT * FROM heroku_54ceab818c7a0f1.outage WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}')`,function (err, results, fields) {
         if (err) throw err;
-        console.log(results)
+        console.log(results.length)
+        if(results.length == 1){
+            console.log('new')
+            db.query(`INSERT INTO heroku_54ceab818c7a0f1.outage(node_id, status,down_timestamp) SELECT node_id, 'off','201820122' FROM heroku_54ceab818c7a0f1.node WHERE serial = '${node_id_mqtt}'`,function (err, results, fields) {
+                if (err) throw err;
+                //console.log(results)
+              });
+        }
+        else{
+            console.log('repeated')
+        }
       });
+
+    
       
 }
 else{
 
   
 
-    db.query(`UPDATE heroku_54ceab818c7a0f1.outage SET status = "on", up_timestamp = "${timestamp_mqtt}" WHERE node_id = "(select node_id from heroku_54ceab818c7a0f1.node where serial = "${node_id_mqtt}")" and status = 'off'`,function (err, results, fields) {
+    db.query(`UPDATE heroku_54ceab818c7a0f1.outage SET status = "on", up_timestamp = "${timestamp_mqtt}" WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and status = 'off'`,function (err, results, fields) {
         if (err) throw err;
         console.log(results)
       });
