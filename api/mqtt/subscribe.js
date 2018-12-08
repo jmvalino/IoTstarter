@@ -53,7 +53,7 @@ else{
     console.log(results.length)
     if(results.length == 1){
         console.log('last')
-        db.query(`UPDATE heroku_54ceab818c7a0f1.gateway SET actions = "NA" WHERE gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}')`,function (err, results, fields) {
+        db.query(`UPDATE heroku_54ceab818c7a0f1.gateway SET actions = "Pending" WHERE gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}')`,function (err, results, fields) {
             if (err) throw err;
             //console.log(results)
           });
