@@ -47,12 +47,29 @@ if(power_state_mqtt == 'off'){
 }
 else{
 
-  
+  /////checks if last record
+  db.query(`SELECT * FROM heroku_54ceab818c7a0f1.outage WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}' AND status = 'off')`,function (err, results, fields) {
+    if (err) throw err;
+    console.log(results.length)
+    if(results.length == 1){
+        console.log('last')
+        db.query(`UPDATE heroku_54ceab818c7a0f1.gateway SET actions = "NA" WHERE gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}')`,function (err, results, fields) {
+            if (err) throw err;
+            //console.log(results)
+          });
+    }
+    else{
+        console.log('not last')
+    }
+  });
+
+  ////////actual update
 
     db.query(`UPDATE heroku_54ceab818c7a0f1.outage SET status = "on", up_timestamp = "${timestamp_mqtt}" WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and status = 'off'`,function (err, results, fields) {
         if (err) throw err;
         console.log(results)
       });
+
 
 }
 
