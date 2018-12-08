@@ -45,17 +45,18 @@ if(power_state_mqtt == 'off'){
     
       
 }
-else{
+else if(power_state_mqtt == 'on'){
 
   /////checks if last record
-  db.query(`SELECT * FROM heroku_54ceab818c7a0f1.outage WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}' AND status = 'off')`,function (err, results, fields) {
+ db.query(`SELECT * FROM heroku_54ceab818c7a0f1.outage as o,heroku_54ceab818c7a0f1.gateway as g  WHERE g.gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}' AND o.status = 'off')`,async function (err, results, fields) {
     if (err) throw err;
-    console.log(results.length)
-    if(results.length == 1){
+    let rel = await results.length
+    console.log(rel)
+    if(rel === 1){
         console.log('last')
-        db.query(`UPDATE heroku_54ceab818c7a0f1.gateway SET actions = "Pending" WHERE gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}')`,function (err, results, fields) {
+         await db.query(`UPDATE heroku_54ceab818c7a0f1.gateway SET actions = "Pending" WHERE gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}')`,function (err, results, fields) {
             if (err) throw err;
-            //console.log(results)
+           // console.log(results)
           });
     }
     else{
@@ -63,12 +64,12 @@ else{
     }
   });
 
-  ////////actual update
+  //////actual update
 
-    db.query(`UPDATE heroku_54ceab818c7a0f1.outage SET status = "on", up_timestamp = "${timestamp_mqtt}" WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and status = 'off'`,function (err, results, fields) {
-        if (err) throw err;
-        console.log(results)
-      });
+  db.query(`UPDATE heroku_54ceab818c7a0f1.outage SET status = "on", up_timestamp = "${timestamp_mqtt}" WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and status = 'off'`,function (err, results, fields) {
+    if (err) throw err;
+    console.log(results)
+  });
 
 
 }
