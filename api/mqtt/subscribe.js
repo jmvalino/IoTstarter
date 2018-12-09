@@ -29,7 +29,7 @@ if(power_state_mqtt == 'off'){
 
     db.query(`SELECT * FROM heroku_54ceab818c7a0f1.outage WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}' AND status = 'off')`,function (err, results, fields) {
         if (err) throw err;
-        console.log(results.length)
+        //console.log(results.length)
         if(results.length == 0){
             console.log('new')
             db.query(`INSERT INTO heroku_54ceab818c7a0f1.outage(node_id, status,down_timestamp) SELECT node_id, 'off','201820122' FROM heroku_54ceab818c7a0f1.node WHERE serial = '${node_id_mqtt}'`,function (err, results, fields) {
@@ -48,10 +48,10 @@ if(power_state_mqtt == 'off'){
 else if(power_state_mqtt == 'on'){
 
   /////checks if last record
- db.query(`SELECT * FROM heroku_54ceab818c7a0f1.outage as o,heroku_54ceab818c7a0f1.gateway as g  WHERE g.gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}' AND o.status = 'off')`,async function (err, results, fields) {
+ await db.query(`SELECT COUNT(n.gateway_id) AS outage_count from heroku_54ceab818c7a0f1.node as n,heroku_54ceab818c7a0f1.gateway as g,heroku_54ceab818c7a0f1.outage as o where o.status = 'off' and g.gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and g.gateway_id = n.gateway_id and (o.node_id = n.node_id) group by n.gateway_id`,async function (err, results, fields) {
     if (err) throw err;
-    let rel = await results.length
-    console.log(rel)
+    let rel = JSON.parse(JSON.stringify(results[0])).outage_count
+    console.log(JSON.parse(JSON.stringify(results[0])).outage_count)
     if(rel === 1){
         console.log('last')
          await db.query(`UPDATE heroku_54ceab818c7a0f1.gateway SET actions = "Pending" WHERE gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}')`,function (err, results, fields) {
@@ -66,7 +66,7 @@ else if(power_state_mqtt == 'on'){
 
   //////actual update
 
-  db.query(`UPDATE heroku_54ceab818c7a0f1.outage SET status = "on", up_timestamp = "${timestamp_mqtt}" WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and status = 'off'`,function (err, results, fields) {
+  await db.query(`UPDATE heroku_54ceab818c7a0f1.outage SET status = "on", up_timestamp = "${timestamp_mqtt}" WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and status = 'off'`,function (err, results, fields) {
     if (err) throw err;
     console.log(results)
   });
