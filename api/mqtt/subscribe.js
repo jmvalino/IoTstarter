@@ -32,7 +32,7 @@ if(power_state_mqtt == 'off'){
         //console.log(results.length)
         if(results.length == 0){
             console.log('new')
-            db.query(`INSERT INTO heroku_54ceab818c7a0f1.outage(node_id, status,down_timestamp) SELECT node_id, 'off','201820122' FROM heroku_54ceab818c7a0f1.node WHERE serial = '${node_id_mqtt}'`,function (err, results, fields) {
+            db.query(`INSERT INTO heroku_54ceab818c7a0f1.outage(node_id, status,down_timestamp) SELECT node_id, 'off','${new Date()}' FROM heroku_54ceab818c7a0f1.node WHERE serial = '${node_id_mqtt}'`,function (err, results, fields) {
                 if (err) throw err;
                 //console.log(results)
               });
