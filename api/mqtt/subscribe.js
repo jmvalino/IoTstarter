@@ -2,6 +2,7 @@ const mqtt = require('mqtt');
 const mongoose = require('mongoose');
 const Outages = require('../models/outages')
 const db = require('../../dbconfig');
+const moment = require('moment-timezone');
 const client = mqtt.connect({
 host: 'm14.cloudmqtt.com',
 port: 19527,
@@ -17,7 +18,7 @@ client.subscribe('iot/interrupt')
 })
 
 client.on('message',async (topic, message, packet) => {
- 
+ console.log(moment().tz("Asia/Shanghai").format('YYYY-MM-DD HH:mm:ss'))
 let MQTT_MESSAGE = await JSON.parse(packet.payload)
 
 let node_id_mqtt =  MQTT_MESSAGE.nodeid
@@ -32,7 +33,7 @@ if(power_state_mqtt == 'off'){
         //console.log(results.length)
         if(results.length == 0){
             console.log('new')
-            db.query(`INSERT INTO heroku_54ceab818c7a0f1.outage(node_id, status,down_timestamp) SELECT node_id, 'off','${new Date()}' FROM heroku_54ceab818c7a0f1.node WHERE serial = '${node_id_mqtt}'`,function (err, results, fields) {
+            db.query(`INSERT INTO heroku_54ceab818c7a0f1.outage(node_id, status,down_timestamp) SELECT node_id, 'off','${moment().tz("Asia/Shanghai").format('YYYY-MM-DD HH:mm:ss')}' FROM heroku_54ceab818c7a0f1.node WHERE serial = '${node_id_mqtt}'`,function (err, results, fields) {
                 if (err) throw err;
                 //console.log(results)
               });
