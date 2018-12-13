@@ -31,7 +31,7 @@ router.post('/add', (req, res, next) => {
 router.get('/', (req, res) => {
     //a - user b - node c - outage d - gateway ////
     let gateway_id = req.query.gateway_id
-    db.query(`SELECT o.outage_id,o.down_timestamp, o.node_id, g.longitude, g.latitude, g.barangay, g.municipality, g.province  FROM heroku_54ceab818c7a0f1.node AS n, heroku_54ceab818c7a0f1.outage AS o, heroku_54ceab818c7a0f1.gateway as g WHERE o.status = 'off' and g.gateway_id = n.gateway_id and (o.node_id = n.node_id) and n.gateway_id = "${gateway_id}"`,function (err, results, fields) {
+    db.query(`SELECT o.outage_id,o.down_timestamp, o.node_id, n.owner, n.house_number, g.barangay, g.municipality, g.province  FROM heroku_54ceab818c7a0f1.node AS n, heroku_54ceab818c7a0f1.outage AS o, heroku_54ceab818c7a0f1.gateway as g WHERE o.status = 'off' and g.gateway_id = n.gateway_id and (o.node_id = n.node_id) and n.gateway_id = "${gateway_id}"`,function (err, results, fields) {
         if (err) throw err;
         res.status(200).json({outages:results})
       });
