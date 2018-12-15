@@ -13,7 +13,7 @@ password: 'sr3TQ270Zowp'
 
 
 client.on('connect', function () {
-client.subscribe('iot/interrupt')
+client.subscribe('GsmClientTest/ledStatus')
 //client.publish('esp/test', 'Hello mqtt')
 })
 
