@@ -4,10 +4,10 @@ const Outages = require('../models/outages')
 const db = require('../../dbconfig');
 const moment = require('moment-timezone');
 const client = mqtt.connect({
-host: 'm14.cloudmqtt.com',
-port: 19527,
-username: 'heroku-server',
-password: '1234abcD'
+host: 'm15.cloudmqtt.com',
+port: 16613,
+username: 'ondnvmvh',
+password: 'sr3TQ270Zowp'
  });
 
 
@@ -26,7 +26,7 @@ let power_state_mqtt =  MQTT_MESSAGE.state
 let timestamp_mqtt =  MQTT_MESSAGE.timestamp
 
 console.log(MQTT_MESSAGE)
-if(power_state_mqtt == 'off'){
+if(power_state_mqtt == 'OFF'){
 
     db.query(`SELECT * FROM heroku_54ceab818c7a0f1.outage WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}' AND status = 'off')`,function (err, results, fields) {
         if (err) throw err;
@@ -46,7 +46,7 @@ if(power_state_mqtt == 'off'){
     
       
 }
-else if(power_state_mqtt == 'on'){
+else if(power_state_mqtt == 'ON'){
 
   /////checks if last record
  await db.query(`SELECT COUNT(n.gateway_id) AS outage_count from heroku_54ceab818c7a0f1.node as n,heroku_54ceab818c7a0f1.gateway as g,heroku_54ceab818c7a0f1.outage as o where o.status = 'off' and g.gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and g.gateway_id = n.gateway_id and (o.node_id = n.node_id) group by n.gateway_id`,async function (err, results, fields) {
