@@ -28,20 +28,65 @@ let timestamp_mqtt =  MQTT_MESSAGE.timestamp
 console.log(MQTT_MESSAGE)
 if(power_state_mqtt == 'OFF'){
 
-    db.query(`SELECT * FROM heroku_54ceab818c7a0f1.outage WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}' AND status = 'off')`,function (err, results, fields) {
-        if (err) throw err;
-        //console.log(results.length)
-        if(results.length == 0){
-            console.log('new')
-            db.query(`INSERT INTO heroku_54ceab818c7a0f1.outage(node_id, status,down_timestamp) SELECT node_id, 'off','${moment().tz("Asia/Shanghai").format('YYYY-MM-DD HH:mm:ss')}' FROM heroku_54ceab818c7a0f1.node WHERE serial = '${node_id_mqtt}'`,function (err, results, fields) {
-                if (err) throw err;
-                //console.log(results)
-              });
-        }
-        else{
-            console.log('repeated')
-        }
-      });
+    const getL = () => {
+        return new Promise(function (resolve,reject) { 
+
+            db.query(`SELECT * FROM heroku_54ceab818c7a0f1.outage WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}' AND status = 'off')`,function (err, results, fields) {
+                                if (err) throw err;
+                                //console.log(results)
+                        resolve(results.length)        
+                              });
+        
+    });
+}
+
+getL()
+.then(function(value) {
+    if(value == 0){
+        console.log('new');
+        db.query(`INSERT INTO heroku_54ceab818c7a0f1.outage(node_id, status,down_timestamp) SELECT node_id, 'off','${moment().tz("Asia/Shanghai").format('YYYY-MM-DD HH:mm:ss')}' FROM heroku_54ceab818c7a0f1.node WHERE serial = '${node_id_mqtt}'`,function (err, results, fields) {
+                            if (err) throw err;
+                            
+                          });
+
+    }
+    else{
+        console.log('repeated')
+    }
+    // expected output: "foo"
+  })
+
+
+    //     db.query(`SELECT * FROM heroku_54ceab818c7a0f1.outage WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}' AND status = 'off')`,function (err, results, fields) {
+    //         if (err) throw err;
+    //         //console.log(results.length)
+    //         if(results.length == 0){
+    //             console.log('new')
+    //             db.query(`INSERT INTO heroku_54ceab818c7a0f1.outage(node_id, status,down_timestamp) SELECT node_id, 'off','${moment().tz("Asia/Shanghai").format('YYYY-MM-DD HH:mm:ss')}' FROM heroku_54ceab818c7a0f1.node WHERE serial = '${node_id_mqtt}'`,function (err, results, fields) {
+    //                 if (err) throw err;
+    //                 //console.log(results)
+    //               });
+    //         }
+    //         else{
+    //             console.log('repeated')
+    //         }
+    //       }
+    // }
+
+    // db.query(`SELECT * FROM heroku_54ceab818c7a0f1.outage WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}' AND status = 'off')`,function (err, results, fields) {
+    //     if (err) throw err;
+    //     //console.log(results.length)
+    //     if(results.length == 0){
+    //         console.log('new')
+    //         db.query(`INSERT INTO heroku_54ceab818c7a0f1.outage(node_id, status,down_timestamp) SELECT node_id, 'off','${moment().tz("Asia/Shanghai").format('YYYY-MM-DD HH:mm:ss')}' FROM heroku_54ceab818c7a0f1.node WHERE serial = '${node_id_mqtt}'`,function (err, results, fields) {
+    //             if (err) throw err;
+    //             //console.log(results)
+    //           });
+    //     }
+    //     else{
+    //         console.log('repeated')
+    //     }
+    //   });
 
     
       
