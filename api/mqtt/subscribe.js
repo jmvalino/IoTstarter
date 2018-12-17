@@ -93,29 +93,64 @@ getL()
 }
 else if(power_state_mqtt == 'ON'){
 
-  /////checks if last record
- await db.query(`SELECT COUNT(n.gateway_id) AS outage_count from heroku_54ceab818c7a0f1.node as n,heroku_54ceab818c7a0f1.gateway as g,heroku_54ceab818c7a0f1.outage as o where o.status = 'off' and g.gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and g.gateway_id = n.gateway_id and (o.node_id = n.node_id) group by n.gateway_id`,async function (err, results, fields) {
+    const getIfLast = () => {
+        return new Promise((resolve,reject) => {
+          db.query(`SELECT COUNT(n.gateway_id) AS outage_count from heroku_54ceab818c7a0f1.node as n,heroku_54ceab818c7a0f1.gateway as g,heroku_54ceab818c7a0f1.outage as o where o.status = 'off' and g.gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and g.gateway_id = n.gateway_id and (o.node_id = n.node_id) group by n.gateway_id`,async function (err, results, fields) {
     if (err) throw err;
     let rel = JSON.parse(JSON.stringify(results[0])).outage_count
-    console.log(JSON.parse(JSON.stringify(results[0])).outage_count)
-    if(rel === 1){
-        console.log('last')
-         await db.query(`UPDATE heroku_54ceab818c7a0f1.gateway SET actions = "Pending" WHERE gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}')`,function (err, results, fields) {
+    resolve(rel)
+          })  
+        })
+    }
+
+
+    getIfLast()
+    .then(function(value) {
+        if(value == 1){
+            console.log('last')
+         db.query(`UPDATE heroku_54ceab818c7a0f1.gateway SET actions = "Pending" WHERE gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}')`,function (err, results, fields) {
             if (err) throw err;
            // console.log(results)
           });
-    }
-    else{
-        console.log('not last')
-    }
-  });
+    
+        }
+        else{
+            console.log('not last')
+        }
+        // expected output: "foo"
+      })
+      .then(()=> {
+        db.query(`UPDATE heroku_54ceab818c7a0f1.outage SET status = "on", up_timestamp = "${timestamp_mqtt}" WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and status = 'off'`,function (err, results, fields) {
+            if (err) throw err;
+            console.log(results)
+          });
+      })
 
-  //////actual update
 
-  await db.query(`UPDATE heroku_54ceab818c7a0f1.outage SET status = "on", up_timestamp = "${timestamp_mqtt}" WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and status = 'off'`,function (err, results, fields) {
-    if (err) throw err;
-    console.log(results)
-  });
+
+  /////checks if last record
+//  await db.query(`SELECT COUNT(n.gateway_id) AS outage_count from heroku_54ceab818c7a0f1.node as n,heroku_54ceab818c7a0f1.gateway as g,heroku_54ceab818c7a0f1.outage as o where o.status = 'off' and g.gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and g.gateway_id = n.gateway_id and (o.node_id = n.node_id) group by n.gateway_id`,async function (err, results, fields) {
+//     if (err) throw err;
+//     let rel = JSON.parse(JSON.stringify(results[0])).outage_count
+//     console.log(JSON.parse(JSON.stringify(results[0])).outage_count)
+//     if(rel === 1){
+//         console.log('last')
+//          await db.query(`UPDATE heroku_54ceab818c7a0f1.gateway SET actions = "Pending" WHERE gateway_id = (select gateway_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}')`,function (err, results, fields) {
+//             if (err) throw err;
+//            // console.log(results)
+//           });
+//     }
+//     else{
+//         console.log('not last')
+//     }
+//   });
+
+//   //////actual update
+
+//   await db.query(`UPDATE heroku_54ceab818c7a0f1.outage SET status = "on", up_timestamp = "${timestamp_mqtt}" WHERE node_id = (select node_id from heroku_54ceab818c7a0f1.node where serial = '${node_id_mqtt}') and status = 'off'`,function (err, results, fields) {
+//     if (err) throw err;
+//     console.log(results)
+//   });
 
 
 }
